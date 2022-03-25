@@ -1,6 +1,6 @@
 {% set name = "macholib" %}
-{% set version = "1.14" %}
-{% set sha256 = "0c436bc847e7b1d9bda0560351bf76d7caf930fb585a828d13608839ef42c432" %}
+{% set version = "1.16" %}
+{% set sha256 = "001bf281279b986a66d7821790d734e61150d52f40c080899df8fefae056e9f7" %}
 
 package:
   name: {{ name|lower }}
