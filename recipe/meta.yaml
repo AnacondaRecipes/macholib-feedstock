@@ -1,6 +1,6 @@
 {% set name = "macholib" %}
-{% set version = "1.14" %}
-{% set sha256 = "0c436bc847e7b1d9bda0560351bf76d7caf930fb585a828d13608839ef42c432" %}
+{% set version = "1.16.2" %}
+{% set sha256 = "557bbfa1bb255c20e9abafe7ed6cd8046b48d9525db2f9b77d3122a63a2a8bf8" %}
 
 package:
   name: {{ name|lower }}
@@ -12,23 +12,32 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 1
-  noarch: python
+  entry_points:
+    - macho_find = macholib.macho_find:main
+    - macho_standalone = macholib.macho_standalone:main
+    - macho_dump = macholib.macho_dump:main
   script: {{ PYTHON }} -m pip install . --no-deps -vv
+  number: 0
 
 requirements:
-  build:
+  host:
     - python
     - pip
+    - setuptools
+    - wheel
   run:
     - python
-    - altgraph >=0.15
+    - altgraph >=0.17
 
 test:
   imports:
     - macholib
   commands:
+    - pip check
+    - macho_dump --help
     - python -m macholib find /tmp/
+  requires:
+    - pip
 
 about:
   home: https://github.com/ronaldoussoren/macholib
