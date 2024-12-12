@@ -36,6 +36,8 @@ test:
   commands:
     - pip check
     - macho_dump --help
+    - macho_standalone --help
+    - macho_find --help
   requires:
     - pip
 
