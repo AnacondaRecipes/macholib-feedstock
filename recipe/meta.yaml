@@ -48,7 +48,7 @@ about:
   description: |
       macholib can be used to analyze and edit Mach-O headers,
       the executable format used by Mac OS X.
-  doc_url: https://macholib.readthedocs.io/en/latest/
+  doc_url: https://macholib.readthedocs.io
   dev_url: https://github.com/ronaldoussoren/macholib
 
 extra:
