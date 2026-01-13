@@ -10,7 +10,6 @@ source:
   sha256: f408c93ab2e995cd2c46e34fe328b130404be143469e41bc366c807448979362
 
 build:
-  skip: true  #[py<38]
   entry_points:
     - macho_find = macholib.macho_find:main
     - macho_standalone = macholib.macho_standalone:main
