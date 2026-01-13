@@ -1,15 +1,13 @@
 {% set name = "macholib" %}
 {% set version = "1.16.4" %}
-{% set sha256 = "f408c93ab2e995cd2c46e34fe328b130404be143469e41bc366c807448979362" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  fn: {{ name }}-{{ version }}.tar.gz
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  sha256: f408c93ab2e995cd2c46e34fe328b130404be143469e41bc366c807448979362
 
 build:
   skip: true  #[py<38]
@@ -31,13 +29,19 @@ requirements:
     - altgraph >=0.17
 
 test:
+  source_files:
+    - macholib_tests
+    - setup.cfg
   imports:
     - macholib
+  requires:
+    - pip
+    - pytest
+    - setuptools
   commands:
     - pip check
     - macho_dump --help
-  requires:
-    - pip
+    - pytest -v macholib_tests
 
 about:
   home: https://github.com/ronaldoussoren/macholib
