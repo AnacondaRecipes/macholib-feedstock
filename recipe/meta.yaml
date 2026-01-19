@@ -27,21 +27,34 @@ requirements:
     - python
     - altgraph >=0.17
 
+# This package is platform independent but package is specific to macOS, those tests work only on macOS
 {% set deselect_tests = "" %}
 # >       macho_dump.print_file(fp, "/bin/sh")
-{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_command_line.py::TestCmdLine::test_check_file" %}  # [win]
+{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_command_line.py::TestCmdLine::test_check_file" %}  # [not osx]
 # E           ValueError: Unknown Mach-O header: 0x7f454c46 in <_io.BufferedReader name='/bin/sh'>
-{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_command_line.py::TestCmdLine::test_macho_dump" %}  # [win]
+{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_command_line.py::TestCmdLine::test_macho_dump" %}  # [not osx]
 # E           First extra element 0:
 # E           '/bin/sh'
 # E           + ['/bin/sh']
-{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_command_line.py::TestCmdLine::test_shared_main" %}  # [win]
+{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_command_line.py::TestCmdLine::test_shared_main" %}  # [not osx]
 # >       result = dyld.dyld_find("/usr/lib/libSystem.dylib")
-{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_dyld.py::TestDyld::test_dyld_find" %}  # [win]
+{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_dyld.py::TestDyld::test_dyld_find" %}  # [not osx]
 # E       ValueError: dylib /System/Library/Frameworks/Cocoa.framework/Versions/Current/Cocoa/Cocoa could not be found
-{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_dyld.py::TestDyld::test_framework_find" %}  # [win]
+{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_dyld.py::TestDyld::test_framework_find" %}  # [not osx]
 # E       ValueError: dylib libSystem.dylib could not be found
-{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_dyld.py::TestTrivialDyld::testBasic" %}  # [win]
+{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_dyld.py::TestTrivialDyld::testBasic" %}  # [not osx]
+
+# Path problems on Windows
+# E         ['/usr/lib/mylib.dylib',
+# E          'C:\\Users\\task_176881389985700/lib\\mylib.dylib',
+# E       -  '/usr/local/lib\\mylib.dylib',
+{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_dyld.py::TestDyld::test_default_search" %}  # [win]
+# E       - ['/usr/bin\\foo.dyld']
+# E       + ['/usr/bin/foo.dyld']
+{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_dyld.py::TestDyld::test_executable_path_search" %}  # [win]
+# E       - ['/Foo/Frameworks\\Python.framework/Versions/Current/Python',
+# E       + ['/Foo/Frameworks/Python.framework/Versions/Current/Python',
+{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_dyld.py::TestDyld::test_override_search" %}  # [win]
 
 test:
   source_files:
