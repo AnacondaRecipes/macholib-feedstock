@@ -28,13 +28,20 @@ requirements:
     - altgraph >=0.17
 
 {% set deselect_tests = "" %}
-# This package is platform independent but some test are platform dependent, those work only on macOS
-{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_command_line.py::TestCmdLine::test_check_file" %}
-{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_command_line.py::TestCmdLine::test_macho_dump" %}
-{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_command_line.py::TestCmdLine::test_shared_main" %}
-{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_dyld.py::TestDyld::test_dyld_find" %}
-{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_dyld.py::TestDyld::test_framework_find" %}
-{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_dyld.py::TestTrivialDyld::testBasic" %}
+# >       macho_dump.print_file(fp, "/bin/sh")
+{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_command_line.py::TestCmdLine::test_check_file" %}  # [win]
+# E           ValueError: Unknown Mach-O header: 0x7f454c46 in <_io.BufferedReader name='/bin/sh'>
+{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_command_line.py::TestCmdLine::test_macho_dump" %}  # [win]
+# E           First extra element 0:
+# E           '/bin/sh'
+# E           + ['/bin/sh']
+{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_command_line.py::TestCmdLine::test_shared_main" %}  # [win]
+# >       result = dyld.dyld_find("/usr/lib/libSystem.dylib")
+{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_dyld.py::TestDyld::test_dyld_find" %}  # [win]
+# E       ValueError: dylib /System/Library/Frameworks/Cocoa.framework/Versions/Current/Cocoa/Cocoa could not be found
+{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_dyld.py::TestDyld::test_framework_find" %}  # [win]
+# E       ValueError: dylib libSystem.dylib could not be found
+{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_dyld.py::TestTrivialDyld::testBasic" %}  # [win]
 
 test:
   source_files:
