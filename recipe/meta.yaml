@@ -27,6 +27,15 @@ requirements:
     - python
     - altgraph >=0.17
 
+{% set deselect_tests = "" %}
+# This package is platform independent but some test are platform dependent, those work only on macOS
+{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_command_line.py::TestCmdLine::test_check_file" %}
+{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_command_line.py::TestCmdLine::test_macho_dump" %}
+{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_command_line.py::TestCmdLine::test_shared_main" %}
+{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_dyld.py::TestDyld::test_dyld_find" %}
+{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_dyld.py::TestDyld::test_framework_find" %}
+{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_dyld.py::TestTrivialDyld::testBasic" %}
+
 test:
   source_files:
     - macholib_tests
@@ -40,7 +49,7 @@ test:
   commands:
     - pip check
     - macho_dump --help
-    - pytest -v macholib_tests
+    - pytest -v macholib_tests {{ deselect_tests }}
 
 about:
   home: https://github.com/ronaldoussoren/macholib
