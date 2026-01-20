@@ -1,18 +1,15 @@
 {% set name = "macholib" %}
-{% set version = "1.16.3" %}
-{% set sha256 = "07ae9e15e8e4cd9a788013d81f5908b3609aa76f9b1421bae9c4d7606ec86a30" %}
+{% set version = "1.16.4" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  fn: {{ name }}-{{ version }}.tar.gz
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: f408c93ab2e995cd2c46e34fe328b130404be143469e41bc366c807448979362
 
 build:
-  skip: true  #[py<38]
   entry_points:
     - macho_find = macholib.macho_find:main
     - macho_standalone = macholib.macho_standalone:main
@@ -30,24 +27,59 @@ requirements:
     - python
     - altgraph >=0.17
 
+# This package is platform independent but package is specific to macOS, those tests work only on macOS
+{% set deselect_tests = "" %}
+# >       macho_dump.print_file(fp, "/bin/sh")
+{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_command_line.py::TestCmdLine::test_check_file" %}  # [not osx]
+# E           ValueError: Unknown Mach-O header: 0x7f454c46 in <_io.BufferedReader name='/bin/sh'>
+{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_command_line.py::TestCmdLine::test_macho_dump" %}  # [not osx]
+# E           First extra element 0:
+# E           '/bin/sh'
+# E           + ['/bin/sh']
+{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_command_line.py::TestCmdLine::test_shared_main" %}  # [not osx]
+# >       result = dyld.dyld_find("/usr/lib/libSystem.dylib")
+{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_dyld.py::TestDyld::test_dyld_find" %}  # [not osx]
+# E       ValueError: dylib /System/Library/Frameworks/Cocoa.framework/Versions/Current/Cocoa/Cocoa could not be found
+{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_dyld.py::TestDyld::test_framework_find" %}  # [not osx]
+# E       ValueError: dylib libSystem.dylib could not be found
+{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_dyld.py::TestTrivialDyld::testBasic" %}  # [not osx]
+
+# Path problems on Windows
+# E         ['/usr/lib/mylib.dylib',
+# E          'C:\\Users\\task_176881389985700/lib\\mylib.dylib',
+# E       -  '/usr/local/lib\\mylib.dylib',
+{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_dyld.py::TestDyld::test_default_search" %}  # [win]
+# E       - ['/usr/bin\\foo.dyld']
+# E       + ['/usr/bin/foo.dyld']
+{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_dyld.py::TestDyld::test_executable_path_search" %}  # [win]
+# E       - ['/Foo/Frameworks\\Python.framework/Versions/Current/Python',
+# E       + ['/Foo/Frameworks/Python.framework/Versions/Current/Python',
+{% set deselect_tests = deselect_tests + " --deselect=macholib_tests/test_dyld.py::TestDyld::test_override_search" %}  # [win]
+
 test:
+  source_files:
+    - macholib_tests
+    - setup.cfg
   imports:
     - macholib
+  requires:
+    - pip
+    - pytest
+    - setuptools
   commands:
     - pip check
     - macho_dump --help
-  requires:
-    - pip
+    - pytest -v macholib_tests {{ deselect_tests }}
 
 about:
   home: https://github.com/ronaldoussoren/macholib
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: 'Mach-O header analysis and editing'
+  summary: Mach-O header analysis and editing
   description: |
-      macholib can be used to analyze and edit Mach-O headers,
-      the executable format used by Mac OS X.
+    macholib can be used to analyze and edit Mach-O headers,
+    the executable format used by Mac OS X.
   doc_url: https://macholib.readthedocs.io
   dev_url: https://github.com/ronaldoussoren/macholib
 
